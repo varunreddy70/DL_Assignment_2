@@ -1,29 +1,39 @@
 import numpy as np
 from tensorflow.keras.models import load_model
 
-# Load model and vocab
+# Load assets
 model = load_model("seq2seq_model.h5")
 char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
-id_to_char = {v: k for k, v in char_to_id.items()}
+id_to_char = np.load("id_to_char.npy", allow_pickle=True).item()
 
-# Debug: Print loaded vocab (first 10 items)
-print("Sample vocabulary:", dict(list(char_to_id.items())[:10]))
-
-# Predict function
 def predict(word):
     try:
-        # Convert input to IDs
-        input_ids = np.array([[char_to_id[c] for c in word.lower()]])
-        # Predict Devanagari characters (dummy decoder input)
-        pred = model.predict([input_ids, np.zeros((1, len(word)))])
-        pred_ids = np.argmax(pred[0], axis=-1)
-        # Filter out padding (0) and unknown IDs
-        output = ''.join([id_to_char[i] for i in pred_ids if i != 0 and i in id_to_char])
+        # Convert input to sequence
+        input_seq = np.array([[char_to_id[c] for c in word.lower()]])
+        
+        # Initialize target sequence
+        target_seq = np.zeros((1, len(word) + 10))  # Extra space for output
+        
+        # Generate predictions
+        for i in range(len(word) + 10 - 1):
+            predictions = model.predict([input_seq, target_seq], verbose=0)
+            next_id = np.argmax(predictions[0, i])
+            if next_id == 0:  # Stop at padding
+                break
+            target_seq[0, i+1] = next_id
+        
+        # Convert to characters
+        output = "".join([id_to_char.get(int(i), "") for i in target_seq[0] if i > 0])
         return output
-    except KeyError as e:
-        return f"Error: Character '{e.args[0]}' not in vocabulary."
+    except Exception as e:
+        return f"Error: {str(e)}"
 
-# Test with example words
-test_words = ["namaste", "ghar", "pyaar", "dhanyavad"]
+# Test cases
+test_words = ["namaste", "ghar", "pyaar", "dhanyavad", "hello"]
 for word in test_words:
     print(f"Input: '{word}' → Output: '{predict(word)}'")
+
+# Vocabulary verification
+print("\nVocabulary check:")
+print(f"Latin 'a' exists: {'a' in char_to_id}")
+print(f"Devanagari 'न' exists: {'न' in char_to_id}")
