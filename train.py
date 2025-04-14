@@ -1,36 +1,51 @@
-import numpy as np
-from tensorflow.keras.models import Model
+import tensorflow as tf
 from tensorflow.keras.layers import Input, LSTM, Dense, Embedding
+from tensorflow.keras.models import Model
+import numpy as np
 
-# Load preprocessed data
-X_train = np.load("X_train.npy")
-y_train = np.load("y_train.npy")
-char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
-vocab_size = len(char_to_id) + 1
+def build_model(vocab_size, embedding_dim=256, hidden_units=512, cell_type='lstm'):
+    # Encoder
+    encoder_inputs = Input(shape=(None,))
+    encoder_embedding = Embedding(vocab_size, embedding_dim)(encoder_inputs)
+    
+    if cell_type == 'lstm':
+        encoder_rnn = LSTM(hidden_units, return_state=True)
+    elif cell_type == 'gru':
+        encoder_rnn = GRU(hidden_units, return_state=True)
+        
+    _, state_h, state_c = encoder_rnn(encoder_embedding)
+    encoder_states = [state_h, state_c] if cell_type == 'lstm' else [state_h]
 
-# Model parameters
-embedding_size = 64  # 'm' in assignment
-hidden_units = 128   # 'k' in assignment
+    # Decoder
+    decoder_inputs = Input(shape=(None,))
+    decoder_embedding = Embedding(vocab_size, embedding_dim)(decoder_inputs)
+    
+    decoder_rnn = LSTM(hidden_units, return_sequences=True, return_state=True) \
+                   if cell_type == 'lstm' else GRU(hidden_units, return_sequences=True, return_state=True)
+                   
+    #decoder_outputs, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
+    if cell_type == 'lstm':
+        decoder_outputs, _, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
+    else:
+        decoder_outputs, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
 
-# Encoder
-encoder_inputs = Input(shape=(None,))
-encoder_embedding = Embedding(vocab_size, embedding_size)(encoder_inputs)
-encoder_lstm = LSTM(hidden_units, return_state=True)
-_, state_h, state_c = encoder_lstm(encoder_embedding)
-encoder_states = [state_h, state_c]
+    decoder_dense = Dense(vocab_size, activation='softmax')(decoder_outputs)
 
-# Decoder
-decoder_inputs = Input(shape=(None,))
-decoder_embedding = Embedding(vocab_size, embedding_size)(decoder_inputs)
-decoder_lstm = LSTM(hidden_units, return_sequences=True, return_state=True)
-decoder_outputs, _, _ = decoder_lstm(decoder_embedding, initial_state=encoder_states)
-decoder_dense = Dense(vocab_size, activation='softmax')
-output = decoder_dense(decoder_outputs)
+    model = Model([encoder_inputs, decoder_inputs], decoder_dense)
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
+    return model
 
-# Compile and train
-model = Model([encoder_inputs, decoder_inputs], output)
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
-model.fit([X_train, y_train[:, :-1]], y_train[:, 1:], epochs=10, batch_size=32)
-
-# Save model
-model.save("seq2seq_model.h5")
+if __name__ == "__main__":
+    char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
+    X_train = np.load("X_train.npy")
+    y_train = np.load("y_train.npy")
+    
+    model = build_model(len(char_to_id), cell_type='lstm')
+    model.fit(
+        [X_train[:, :-1], y_train[:, :-1]],  # Teacher forcing
+        y_train[:, 1:], 
+        batch_size=64,
+        epochs=10,
+        validation_split=0.2
+    )
+    model.save("transliteration_model.h5")
