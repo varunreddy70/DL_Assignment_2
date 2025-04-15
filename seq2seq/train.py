@@ -1,51 +1,49 @@
-import tensorflow as tf
-from tensorflow.keras.layers import Input, LSTM, Dense, Embedding
-from tensorflow.keras.models import Model
 import numpy as np
+from model import build_model
 
-def build_model(vocab_size, embedding_dim=256, hidden_units=512, cell_type='lstm'):
-    # Encoder
-    encoder_inputs = Input(shape=(None,))
-    encoder_embedding = Embedding(vocab_size, embedding_dim)(encoder_inputs)
-    
-    if cell_type == 'lstm':
-        encoder_rnn = LSTM(hidden_units, return_state=True)
-    elif cell_type == 'gru':
-        encoder_rnn = GRU(hidden_units, return_state=True)
-        
-    _, state_h, state_c = encoder_rnn(encoder_embedding)
-    encoder_states = [state_h, state_c] if cell_type == 'lstm' else [state_h]
+# Load preprocessed data
+X_train = np.load("X_train.npy")
+y_train = np.load("y_train.npy")
+char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
 
-    # Decoder
-    decoder_inputs = Input(shape=(None,))
-    decoder_embedding = Embedding(vocab_size, embedding_dim)(decoder_inputs)
-    
-    decoder_rnn = LSTM(hidden_units, return_sequences=True, return_state=True) \
-                   if cell_type == 'lstm' else GRU(hidden_units, return_sequences=True, return_state=True)
-                   
-    #decoder_outputs, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
-    if cell_type == 'lstm':
-        decoder_outputs, _, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
-    else:
-        decoder_outputs, _ = decoder_rnn(decoder_embedding, initial_state=encoder_states)
+# Vocabulary sizes
+num_encoder_tokens = len(char_to_id)
+num_decoder_tokens = len(char_to_id)  # assuming same for both
 
-    decoder_dense = Dense(vocab_size, activation='softmax')(decoder_outputs)
+# Model configuration
+config = {
+    'rnn_type': 'LSTM',
+    'embedding_dim': 512,
+    'latent_dim': 1024,
+    'encoder_layers': 2,
+    'decoder_layers': 3,
+    'dropout': 0.1,
+    'epochs': 5,
+    'batch_size': 64
+}
 
-    model = Model([encoder_inputs, decoder_inputs], decoder_dense)
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
-    return model
+# Build and compile the model
+model = build_model(
+    rnn_type=config['rnn_type'],
+    embedding_dim=config['embedding_dim'],
+    latent_dim=config['latent_dim'],
+    encoder_layers=config['encoder_layers'],
+    decoder_layers=config['decoder_layers'],
+    dropout=config['dropout'],
+    num_encoder_tokens=num_encoder_tokens,
+    num_decoder_tokens=num_decoder_tokens
+)
 
-if __name__ == "__main__":
-    char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
-    X_train = np.load("X_train.npy")
-    y_train = np.load("y_train.npy")
-    
-    model = build_model(len(char_to_id), cell_type='lstm')
-    model.fit(
-        [X_train[:, :-1], y_train[:, :-1]],  # Teacher forcing
-        y_train[:, 1:], 
-        batch_size=64,
-        epochs=10,
-        validation_split=0.2
-    )
-    model.save("transliteration_model.h5")
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
+
+# Train with teacher forcing
+history = model.fit(
+    [X_train, y_train[:, :-1]],  # Teacher forcing
+    y_train[:, 1:],
+    batch_size=config['batch_size'],
+    epochs=config['epochs'],
+    validation_split=0.2
+)
+
+model.save("transliteration_model.h5")
+print("Training completed. Model saved.")
