@@ -1,14 +1,14 @@
 import numpy as np
 from model import build_model
 
-# Load preprocessed data
+
 X_train = np.load("X_train.npy")
 y_train = np.load("y_train.npy")
 char_to_id = np.load("char_to_id.npy", allow_pickle=True).item()
 
 # Vocabulary sizes
 num_encoder_tokens = len(char_to_id)
-num_decoder_tokens = len(char_to_id)  # assuming same for both
+num_decoder_tokens = len(char_to_id)  
 
 # Model configuration
 config = {
@@ -36,7 +36,7 @@ model = build_model(
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
 
-# Train with teacher forcing
+
 history = model.fit(
     [X_train, y_train[:, :-1]],  # Teacher forcing
     y_train[:, 1:],
