@@ -2,10 +2,8 @@ from tensorflow.keras.layers import Input, LSTM, GRU, Dense, Embedding
 from tensorflow.keras.models import Model
 
 def build_model(rnn_type, embedding_dim, latent_dim, encoder_layers, decoder_layers, dropout=0.1, num_encoder_tokens=0, num_decoder_tokens=0):
-    # Remove the global variable assignment for latent_dim
-    # latent_dim is now passed as an argument, no need to set it globally
-    
-    # Define input layers
+
+    # input layers
     encoder_inputs = Input(shape=(None,), name="encoder_input")
     decoder_inputs = Input(shape=(None,), name="decoder_input")
 
