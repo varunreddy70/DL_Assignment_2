@@ -36,6 +36,20 @@ model = build_model(
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
 
+# PARAMETER COUNT
+trainable_params = model.count_params()
+print(f"✅ Total Trainable Parameters: {trainable_params}")
+
+# COMPUTATION COUNT ESTIMATION
+# Based on the assumption: LSTM computation per time step = 4 * (embedding_dim * hidden + hidden^2 + hidden)
+T = X_train.shape[1]  # Sequence length
+m = config['embedding_dim']
+k = config['latent_dim']
+num_layers = 1  # since only 1 layer is actually implemented in encoder/decoder
+
+lstm_computations = 4 * (m * k + k * k + k)  # per time step
+total_computations_per_seq = T * lstm_computations * 2  # encoder + decoder
+print(f"✅ Approximate Computations per Input-Output Pair: {total_computations_per_seq}")
 
 history = model.fit(
     [X_train, y_train[:, :-1]],  # Teacher forcing
