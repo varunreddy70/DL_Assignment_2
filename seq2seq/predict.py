@@ -15,23 +15,20 @@ class Transliterator:
         encoder_inputs = self.model.input[0]
         encoder_embedding_layer = self.model.get_layer("encoder_embedding")
         encoder_embedding = encoder_embedding_layer(encoder_inputs)
-        # Get the encoder LSTM layer 
         encoder_lstm = self.model.get_layer("encoder_lstm")
-        # Call the encoder LSTM
         encoder_outputs = encoder_lstm(encoder_embedding)
         state_h_enc = encoder_outputs[1]
         state_c_enc = encoder_outputs[2]
         self.encoder_model = Model(encoder_inputs, [state_h_enc, state_c_enc])
+        
         # Building the Decoder
         decoder_inputs = Input(shape=(1,), name="decoder_input_test")
         decoder_state_input_h = Input(shape=(latent_dim,), name="input_h")
         decoder_state_input_c = Input(shape=(latent_dim,), name="input_c")
         decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 
-
         decoder_embedding_layer = self.model.get_layer("decoder_embedding") 
         decoder_embedding = decoder_embedding_layer(decoder_inputs)
-
 
         original_decoder_lstm = self.model.get_layer("decoder_lstm")
         decoder_lstm_infer = LSTM(
@@ -58,17 +55,13 @@ class Transliterator:
         )
 
     def predict(self, input_text, max_length=20):
-
         input_seq = np.array([[self.char_to_id.get(c, self.char_to_id.get('<unk>', 0)) for c in input_text.lower()]])
-
         states_value = self.encoder_model.predict(input_seq)
-
         target_seq = np.zeros((1, 1))
         target_seq[0, 0] = self.char_to_id['<start>']
-
         output_text = ''
+        
         for _ in range(max_length):
-            
             output_tokens, h, c = self.decoder_model.predict([target_seq] + states_value)
             sampled_token_index = np.argmax(output_tokens[0, -1, :])
             sampled_char = self.id_to_char[sampled_token_index]
@@ -79,15 +72,34 @@ class Transliterator:
             if sampled_char not in ['<pad>', '<unk>']:
                 output_text += sampled_char
 
-
             target_seq[0, 0] = sampled_token_index
-            # Update states.
             states_value = [h, c]
 
         return output_text
 
+def run_test_predictions(test_samples=5):
+    import pandas as pd
+    test_data = pd.read_csv("hi.translit.sampled.test.tsv", sep="\t", header=None,
+                          names=["devanagari", "latin", "count"])
+    test_data = test_data.dropna().sample(test_samples)
+    
+    transliterator = Transliterator("transliteration_model.h5")
+    
+    print("\n=== Sample Test Predictions ===")
+    for _, row in test_data.iterrows():
+        latin = row['latin']
+        devanagari = row['devanagari']
+        prediction = transliterator.predict(latin)
+        print(f"Input: {latin.ljust(15)} | True: {devanagari.ljust(15)} | Predicted: {prediction}")
+
 if __name__ == "__main__":
     transliterator = Transliterator("transliteration_model.h5")
+    
+    # Test words from assignment
     test_words = ["namaste", "pyaar", "dil", "shanti", "surya"]
+    print("=== Custom Test Words ===")
     for word in test_words:
         print(f"{word.ljust(10)} → {transliterator.predict(word)}")
+    
+    # Sample predictions from test set
+    run_test_predictions()
