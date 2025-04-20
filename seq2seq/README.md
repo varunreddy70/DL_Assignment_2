@@ -1,83 +1,86 @@
-# Sequence-to-Sequence Transliteration Model
+# 🔤 Sequence-to-Sequence Transliteration Model
 
-This repository contains an RNN-based seq2seq model for transliterating Latin script to Devanagari script, implemented as part of a Deep Learning assignment using the Dakshina dataset.
+This repository contains an RNN-based Seq2Seq model for transliterating words from **Latin script to Devanagari script**, built as part of a Deep Learning assignment using the [Dakshina dataset](https://github.com/google-research-datasets/dakshina).
 
-## Model Architecture
-- **Encoder-Decoder** with LSTM/GRU cells
-- Character-level embeddings
-- Configurable hyperparameters (embedding dim, hidden units, etc.)
-- Teacher forcing during training
+---
 
-## Requirements
+## 🧠 Model Architecture
+
+- Encoder-Decoder architecture using **LSTM** or **GRU** cells
+- Character-level **embeddings**
+- **Configurable hyperparameters**: embedding dim, hidden units, dropout, RNN type
+- Uses **teacher forcing** during training
+- Trained on word-level transliteration pairs
+
+---
+
+## 🧰 Requirements
+
 - Python 3.8+
 - TensorFlow 2.x
 - pandas
 - numpy
 
-## Files
-.
-train.py # Training script
-evaluate.py # Test set evaluation
-predict.py # Prediction interface
-model.py # Model architecture
-preprocess.py # Data preprocessing
-inference_setup.py # Encoder/decoder setup for inference
-transliteration_model.h5 # Saved model
-*.npy # Preprocessed data files
+---
 
+## 📁 Files
 
-## Usage
+| File | Description |
+|------|-------------|
+| `train.py` | Training script (includes param/computation estimation) |
+| `evaluate.py` | Test set evaluation (optional) |
+| `predict.py` | Interactive predictions for sample words |
+| `model.py` | Configurable model architecture |
+| `preprocess.py` | Preprocesses the dataset and builds vocab |
+| `inference_setup.py` | Builds and saves encoder/decoder models for inference |
+| `transliteration_model.h5` | Saved trained model |
+| `*.npy` | Preprocessed input/output sequences and vocab |
 
-### 1. Training
-bash
+---
+
+## 🚀 Usage
+
+### 1. Train the Model
+
 python train.py
 Outputs:
 
-Model file (transliteration_model.h5)
+Trained model (transliteration_model.h5)
 
-Training/validation metrics
+Training/validation accuracy
 
-Parameter and computation counts
+Parameter count and computation cost estimation
 
-### 2. Evaluation
-bash
+### 2. Evaluate on Test Set (Optional)
+
 python evaluate.py
 Reports:
 
-Test loss
-
 Test accuracy
 
-### 3. Prediction
-bash
+Sample predictions
+
+### 3. Predict Custom Words
+
 python predict.py
+
 Generates:
+Transliteration of predefined sample words (e.g., namaste, pyaar, dil)
 
-Predictions for custom words (namaste, pyaar, etc.)
-
-Random samples from test set
 
 ## Results
+
 Metric	Value
-Training Acc	95.66%
-Validation Acc	95.12%
+Training Accuracy	95.66%
+Validation Accuracy	95.12%
 Test Accuracy	93.91%
-Parameters	12.7M
+Model Parameters	~12.7M
 Sample predictions:
 
-namaste → समास्त्री
-pyaar → प्रया
-dil → हिकल
+namaste → समास्त्री  
+pyaar   → प्रया  
+dil     → हिकल  
 
 ## References
 Dakshina Dataset
-
 Keras Seq2Seq Guide
-
-
-### Key features:
-1. Clear structure matching your project
-2. Documents all key scripts
-3. Shows sample results
-4. Includes configuration options
-5. Provides reference links
