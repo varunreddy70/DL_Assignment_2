@@ -82,19 +82,27 @@ Transliteration of predefined sample words (e.g., namaste, pyaar, dil)
 Below are the outputs from our training, evaluation, and prediction scripts:
 
 #### Training Output
-![Training Output](![train 3](https://github.com/user-attachments/assets/49a6d667-b2d0-4f1d-ad39-b2a53483d0b5)
+![Training Output](https://github.com/user-attachments/assets/7b924ff5-6a4c-4be2-978e-c39434f89f66)
+)
 
 *Figure 1: Output of train.py showing training and validation accuracy/loss over epochs*
 
 #### Evaluation Output
-![Evaluation Output](![evaluate](https://github.com/user-attachments/assets/90c31d80-3ea1-46de-a73c-441afcebd70f)
+![Evaluation Output](https://github.com/user-attachments/assets/90c31d80-3ea1-46de-a73c-441afcebd70f)
 
 *Figure 2: Output of evaluate.py showing test accuracy and loss metrics*
 
 #### Prediction Samples
-![Prediction Samples](![predict 1](https://github.com/user-attachments/assets/44763bf7-58e5-48b9-a07d-fcfad6dd88a6)
+![Prediction Samples](https://github.com/user-attachments/assets/44763bf7-58e5-48b9-a07d-fcfad6dd88a6)
 *Figure 3: Sample predictions from predict.py for predefined test words*
 
+### Model Complexity
+
+- **Total Parameters:** 12,781,661 (12,482.09 KB)
+- **Trainable Parameters:** 12,781,661 (12,482.09 KB)
+- **Non-Trainable Parameters:** 4 (0.00 KB)
+- **Approximate Computations per Input-Output Pair:** 251,822,080 operations
+  
 ### Sample Predictions
 
 | Input Word | True Transliteration | Predicted Transliteration |
