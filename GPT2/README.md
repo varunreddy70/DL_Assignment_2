@@ -23,13 +23,13 @@ pip install transformers torch datasets
 
 - **Base model**: GPT-2 (124M parameters)
 
-#### 🏋️ Training Configuration:
+#### Training Configuration:
 - **Batch size**: 2  
 - **Epochs**: 5
 - **Learning rate**: 5e-5  
 - **Mixed Precision (FP16)**: Enabled  
 
-#### 🎶 Generation Parameters:
+#### Generation Parameters:
 - **Temperature**: 0.7  
 - **Top-k**: 50  
 - **Top-p**: 0.95  
