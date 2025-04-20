@@ -21,8 +21,8 @@ config = {
     'rnn_type': 'LSTM',
     'embedding_dim': 512,
     'latent_dim': 1024,
-    'encoder_layers': 1,  # Kept as 1 to match computation assumptions
-    'decoder_layers': 1,  # Kept as 1 to match computation assumptions
+    'encoder_layers': 1,
+    'decoder_layers': 1,
     'dropout': 0.1,
     'epochs': 5,
     'batch_size': 64
@@ -43,18 +43,28 @@ model = build_model(
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # Parameter count
-trainable_params = model.count_params()
-print(f"✅ Total Trainable Parameters: {trainable_params}")
+total_params = model.count_params()
+trainable_params = model.trainable_variables
+non_trainable_params = model.non_trainable_variables
+
+# Calculate the number of trainable parameters
+trainable_params_count = np.sum([np.prod(v.shape.as_list()) for v in trainable_params])
+non_trainable_params_count = np.sum([np.prod(v.shape.as_list()) for v in non_trainable_params])
+
+print(f"Total Parameters: {total_params} ({total_params / 1024:.2f} KB)")
+print(f"Trainable Parameters: {trainable_params_count} ({trainable_params_count / 1024:.2f} KB)")
+print(f"Non-Trainable Parameters: {non_trainable_params_count} ({non_trainable_params_count / 1024:.2f} KB)")
 
 # Computation count estimation
 T = X_train.shape[1]  # Sequence length
 m = config['embedding_dim']
 k = config['latent_dim']
-num_layers = 1  # since only 1 layer is actually implemented
+num_layers = config['encoder_layers'] + config['decoder_layers']
 
-lstm_computations = 4 * (m * k + k * k + k)  # per time step
-total_computations_per_seq = T * lstm_computations * 2  # encoder + decoder
-print(f"✅ Approximate Computations per Input-Output Pair: {total_computations_per_seq}")
+# Assuming LSTM for simplicity, adjust if using GRU or vanilla RNN
+lstm_computations_per_step = 4 * (m * k + k * k + k)  # per time step
+total_computations_per_seq = T * lstm_computations_per_step * num_layers
+print(f"-Approximate Computations per Input-Output Pair: {total_computations_per_seq}")
 
 # Training with validation
 history = model.fit(
