@@ -23,7 +23,7 @@ This repository contains an RNN-based Seq2Seq model for transliterating words fr
 
 ---
 
-## 📁 Files
+## Files
 
 | File | Description |
 |------|-------------|
@@ -82,5 +82,5 @@ pyaar   → प्रया
 dil     → हिकल  
 
 ## References
--Dakshina Dataset
+-Dakshina Dataset  
 -Keras Seq2Seq Guide
