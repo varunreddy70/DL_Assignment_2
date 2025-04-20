@@ -70,16 +70,39 @@ Transliteration of predefined sample words (e.g., namaste, pyaar, dil)
 
 ## Results
 
-Metric	Value
-Training Accuracy	95.66%
-Validation Accuracy	95.12%
-Test Accuracy	93.91%
-Model Parameters	~12.7M
-Sample predictions:
+| Metric          | Value        |
+|-----------------|--------------|
+| Training Accuracy | 95.66%       |
+| Validation Accuracy | 95.12%      |
+| Test Accuracy   | 93.91%       |
+| Model Parameters | ~12.7M       |
 
-namaste → समास्त्री  
-pyaar   → प्रया  
-dil     → हिकल  
+### Performance
+
+Below are the outputs from our training, evaluation, and prediction scripts:
+
+#### Training Output
+![Training Output](![train 3](https://github.com/user-attachments/assets/49a6d667-b2d0-4f1d-ad39-b2a53483d0b5)
+
+*Figure 1: Output of train.py showing training and validation accuracy/loss over epochs*
+
+#### Evaluation Output
+![Evaluation Output](![evaluate](https://github.com/user-attachments/assets/90c31d80-3ea1-46de-a73c-441afcebd70f)
+
+*Figure 2: Output of evaluate.py showing test accuracy and loss metrics*
+
+#### Prediction Samples
+![Prediction Samples](![predict 1](https://github.com/user-attachments/assets/44763bf7-58e5-48b9-a07d-fcfad6dd88a6)
+*Figure 3: Sample predictions from predict.py for predefined test words*
+
+### Sample Predictions
+
+| Input Word | True Transliteration | Predicted Transliteration |
+|------------|----------------------|---------------------------|
+| namaste    | नमस्ते              | नमस्ते                   |
+| pyaar      | प्रेम                | प्रया                    |
+| dil        | दिल                 | हिकल                    |
+
 
 ## References
 -Dakshina Dataset  
