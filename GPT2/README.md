@@ -13,8 +13,9 @@ Fine‑tunes the GPT‑2 language model to generate English song lyrics, using t
 
 Install with:
 bash
+```
 pip install transformers torch datasets
-
+```
 
 ---
 
