@@ -72,8 +72,8 @@ Transliteration of predefined sample words (e.g., namaste, pyaar, dil)
 
 | Metric          | Value        |
 |-----------------|--------------|
-| Training Accuracy | 95.66%       |
-| Validation Accuracy | 95.12%      |
+| Training Accuracy | 96.72%       |
+| Validation Accuracy | 95.78%      |
 | Test Accuracy   | 93.91%       |
 | Model Parameters | ~12.7M       |
 
