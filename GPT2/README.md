@@ -18,22 +18,6 @@ pip install transformers torch datasets
 
 ---
 
-## Repository Structure
-
-```
-.
-├── GPT2_Lyrics_Generation.ipynb   # Jupyter notebook with all steps
-├── lyrics.txt                     # Raw lyrics, one line per song lyric
-├── results/                       # Checkpoints & logs saved by Trainer
-└── lyrics_gpt2/                   # Fine‑tuned model & tokenizer
-    ├── config.json
-    ├── pytorch_model.bin
-    ├── merges.txt
-    ├── special_tokens_map.json
-    ├── tokenizer_config.json
-    └── vocab.json
-```
-
 
 ##  Notebook Workflow
 
