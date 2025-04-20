@@ -16,14 +16,14 @@ This repository contains an RNN-based seq2seq model for transliterating Latin sc
 
 ## Files
 .
-├── train.py # Training script
-├── evaluate.py # Test set evaluation
-├── predict.py # Prediction interface
-├── model.py # Model architecture
-├── preprocess.py # Data preprocessing
-├── inference_setup.py # Encoder/decoder setup for inference
-├── transliteration_model.h5 # Saved model
-└── *.npy # Preprocessed data files
+train.py # Training script
+evaluate.py # Test set evaluation
+predict.py # Prediction interface
+model.py # Model architecture
+preprocess.py # Data preprocessing
+inference_setup.py # Encoder/decoder setup for inference
+transliteration_model.h5 # Saved model
+*.npy # Preprocessed data files
 
 
 ## Usage
@@ -39,7 +39,7 @@ Training/validation metrics
 
 Parameter and computation counts
 
-2. Evaluation
+### 2. Evaluation
 bash
 python evaluate.py
 Reports:
@@ -48,7 +48,7 @@ Test loss
 
 Test accuracy
 
-3. Prediction
+### 3. Prediction
 bash
 python predict.py
 Generates:
@@ -57,7 +57,7 @@ Predictions for custom words (namaste, pyaar, etc.)
 
 Random samples from test set
 
-Results
+## Results
 Metric	Value
 Training Acc	95.66%
 Validation Acc	95.12%
@@ -82,13 +82,13 @@ config = {
     'epochs': 5,
     'batch_size': 64
 }
-References
+## References
 Dakshina Dataset
 
 Keras Seq2Seq Guide
 
 
-Key features:
+### Key features:
 1. Clear structure matching your project
 2. Documents all key scripts
 3. Shows sample results
