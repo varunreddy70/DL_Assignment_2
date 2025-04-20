@@ -1,10 +1,10 @@
-# 🔤 Sequence-to-Sequence Transliteration Model
+# Sequence-to-Sequence Transliteration Model
 
 This repository contains an RNN-based Seq2Seq model for transliterating words from **Latin script to Devanagari script**, built as part of a Deep Learning assignment using the [Dakshina dataset](https://github.com/google-research-datasets/dakshina).
 
 ---
 
-## 🧠 Model Architecture
+## Model Architecture
 
 - Encoder-Decoder architecture using **LSTM** or **GRU** cells
 - Character-level **embeddings**
@@ -14,7 +14,7 @@ This repository contains an RNN-based Seq2Seq model for transliterating words fr
 
 ---
 
-## 🧰 Requirements
+## Requirements
 
 - Python 3.8+
 - TensorFlow 2.x
@@ -38,7 +38,7 @@ This repository contains an RNN-based Seq2Seq model for transliterating words fr
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### 1. Train the Model
 
@@ -82,5 +82,5 @@ pyaar   → प्रया
 dil     → हिकल  
 
 ## References
-Dakshina Dataset
-Keras Seq2Seq Guide
+-Dakshina Dataset
+-Keras Seq2Seq Guide
