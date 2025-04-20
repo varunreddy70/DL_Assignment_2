@@ -68,20 +68,7 @@ Sample predictions:
 namaste → समास्त्री
 pyaar → प्रया
 dil → हिकल
-Configuration
-Modify train.py to change:
 
-python
-config = {
-    'rnn_type': 'LSTM',     # or 'GRU'
-    'embedding_dim': 512,
-    'latent_dim': 1024,
-    'encoder_layers': 1,
-    'decoder_layers': 1,
-    'dropout': 0.1,
-    'epochs': 5,
-    'batch_size': 64
-}
 ## References
 Dakshina Dataset
 
