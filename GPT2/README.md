@@ -23,131 +23,31 @@ pip install transformers torch datasets
 
 The notebook implements the following cells:
 
-1. **Setup**  
+### 1. Setup 
    
 bash
    !pip install transformers torch datasets
 
-2. **Load & Tokenize Data**  
-   
-python
+Installs required libraries like Transformers, Torch, and Datasets.
 
-           from transformers import GPT2Tokenizer
-           with open('lyrics.txt', 'r', encoding='utf-8') as f:
-               lyrics = [line.strip() for line in f if line.strip()]
-        
-           tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-           tokenizer.add_special_tokens({
-               'bos_token': '<|startoftext|>',
-               'eos_token': '<|endoftext|>',
-               'pad_token': '<|pad|>'
-           })
-        
-           formatted = [f"<|startoftext|>{l}<|endoftext|>" for l in lyrics]
-           tokenized_lyrics = tokenizer(
-               formatted,
-               truncation=True,
-               max_length=512,
-               padding="max_length"
-           )
+### 2. Load & Tokenize Data
+Loads lyrics.txt, formats each lyric line with special tokens (<|startoftext|>, <|endoftext|>), and tokenizes them using a GPT-2 tokenizer.
 
-3. **Dataset Class**  
-   
-python
-   import torch
-   
+### 3. Dataset Class
+Creates a custom PyTorch dataset to handle the tokenized lyrics and prepare them for training.
 
-       class LyricsDataset(torch.utils.data.Dataset):
-           def __init__(self, encodings):
-               self.encodings = encodings
-           def __getitem__(self, idx):
-               return {
-                   'input_ids':    torch.tensor(self.encodings['input_ids'][idx]),
-                   'attention_mask': torch.tensor(self.encodings['attention_mask'][idx]),
-                   'labels':       torch.tensor(self.encodings['input_ids'][idx])
-               }
-           def __len__(self):
-               return len(self.encodings['input_ids'])
-    
-       dataset = LyricsDataset(tokenized_lyrics)
+### 4. Model & Tokenizer Initialization
+Loads a pre-trained GPT-2 model and resizes its embeddings to include the new special tokens.
 
-4. **Model & Tokenizer Initialization**  
-   
-python
+### 5. Training Setup
+Defines training arguments (epochs, batch size, learning rate, logging) and uses HuggingFace's Trainer API to fine-tune the model.
 
-       from transformers import GPT2LMHeadModel
-    
-       model = GPT2LMHeadModel.from_pretrained("gpt2")
-       model.resize_token_embeddings(len(tokenizer))
-       model.config.pad_token_id = tokenizer.pad_token_id
+### 6. Save Fine‑Tuned Model
+Saves the fine-tuned model and tokenizer to the lyrics_gpt2/ directory for reuse.
 
-5. **Training Setup**  
-   
-python
+### 7. Generate Lyrics
+Uses a text-generation pipeline to generate new lyrics from the fine-tuned model using sampling techniques (temperature, top-k, top-p).
 
-       from transformers import TrainingArguments, Trainer
-    
-       training_args = TrainingArguments(
-           output_dir="./results",
-           num_train_epochs=3,
-           per_device_train_batch_size=2,
-           save_steps=10000,
-           save_total_limit=2,
-           learning_rate=5e-5,
-           weight_decay=0.01,
-           fp16=True,
-           logging_steps=100,
-           report_to="none"
-       )
-    
-       trainer = Trainer(
-           model=model,
-           args=training_args,
-           train_dataset=dataset,
-           data_collator=lambda data: {
-               'input_ids':     torch.stack([item['input_ids']    for item in data]),
-               'attention_mask':torch.stack([item['attention_mask']for item in data]),
-               'labels':        torch.stack([item['labels']       for item in data])
-           }
-       )
-    
-       trainer.train()
-
-6. **Save Fine‑Tuned Model**  
-   
-python
-
-       model.save_pretrained("./lyrics_gpt2")
-       tokenizer.save_pretrained("./lyrics_gpt2")
-
-7. **Generate Lyrics**  
-   
-python
-
-       from transformers import pipeline
-    
-       lyrics_generator = pipeline(
-           "text-generation",
-           model="./lyrics_gpt2",
-           tokenizer="./lyrics_gpt2",
-           device=0  # or device=-1 for CPU
-       )
-    
-       generated = lyrics_generator(
-           "<|startoftext|>",
-           max_length=100,
-           num_return_sequences=3,
-           temperature=0.7,
-           top_k=50,
-           top_p=0.95,
-           repetition_penalty=1.2
-       )
-    
-       for i, out in enumerate(generated, 1):
-           print(f"--- Generated Lyrics {i} ---\n{out['generated_text']}\n")
-
-
----
 
 ## Example Output
 
